@@ -152,7 +152,7 @@ func doCount(redisHost, hostname string) int {
 }
 
 func main() {
-	port := "8000"
+	port := "80"
 	envPort := os.Getenv("PORT")
 	if envPort != "" {
 		port = envPort
