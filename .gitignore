@@ -13,3 +13,6 @@
 *.local.yaml
 *.local.json
 *.local.txt
+
+# Project
+/counter
