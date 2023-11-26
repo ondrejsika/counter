@@ -14,5 +14,8 @@
 *.local.json
 *.local.txt
 
+# Go
+/dist/**
+
 # Project
 /counter
