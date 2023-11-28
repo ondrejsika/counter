@@ -1,0 +1,12 @@
+# Required
+host:
+
+# Optional
+image: ghcr.io/ondrejsika/counter
+replicas: 2
+clusterIssuer: letsencrypt
+# ingressExtraAnnotations:
+#   name: value
+#   foo: bar
+ingressExtraAnnotations: {}
+ingressClassName: nginx

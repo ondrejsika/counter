@@ -1,0 +1,5 @@
+apiVersion: v2
+name: counter
+description: Simple counter app with Redis backend
+type: application
+version: 0.0.0
