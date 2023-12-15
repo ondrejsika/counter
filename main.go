@@ -27,12 +27,21 @@ type StatusResponse struct {
 	RunTimestampUnixDate string `json:"run_timestamp_unixdate"`
 }
 
-func indexPlainText(w http.ResponseWriter, hostname string, count int) {
-	fmt.Fprintf(w, "%s %d", hostname, count)
+func indexPlainText(w http.ResponseWriter, hostname string, count int, extraText string) {
+	if extraText != "" {
+		fmt.Fprintf(w, "%s %s %d", extraText, hostname, count)
+	} else {
+		fmt.Fprintf(w, "%s %d", hostname, count)
+	}
 	fmt.Fprint(w, "\n")
 }
 
-func indexHTML(w http.ResponseWriter, hostname string, count int) {
+func indexHTML(w http.ResponseWriter, hostname string, count int, extraText string) {
+	extraTextBlock := ""
+	if extraText != "" {
+		extraTextBlock = `<h2>` + extraText + `</h2>`
+	}
+
 	w.Header().Set("Content-Type", "text/html")
 	fmt.Fprint(w, `<style>
 	html, body {
@@ -62,6 +71,7 @@ func indexHTML(w http.ResponseWriter, hostname string, count int) {
 	<link rel="icon" href="/favicon.ico">
 	<section class="center-parent">
 		<div class="center-child">
+			`+extraTextBlock+`
 			<h1>
 				`+strconv.Itoa(count)+`
 			</h1>
@@ -180,6 +190,8 @@ func main() {
 		}
 	}
 
+	extraText := os.Getenv("EXTRA_TEXT")
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		hostname, _ := os.Hostname()
 		counter := doCount(redisHost, hostname)
@@ -189,16 +201,16 @@ func main() {
 			if len(userAgentList) > 0 {
 				// If User-Agent starts with curl, use plain text
 				if strings.HasPrefix(userAgentList[0], "curl") {
-					indexPlainText(w, hostname, counter)
+					indexPlainText(w, hostname, counter, extraText)
 				} else {
 					// If User-Agent header presents and not starts with curl
 					// use HTML (Chrome, Safari, Firefox, ...)
-					indexHTML(w, hostname, counter)
+					indexHTML(w, hostname, counter, extraText)
 				}
 			}
 		} else {
 			// If User-Agent header doesn't exists, use plain text
-			indexPlainText(w, hostname, counter)
+			indexPlainText(w, hostname, counter, extraText)
 		}
 		Logger.Info().
 			Str("hostname", hostname).
