@@ -219,6 +219,22 @@ func main() {
 			Int("counter", counter).
 			Msg(r.Method + " " + r.URL.Path)
 	})
+	http.HandleFunc("/api/counter", func(w http.ResponseWriter, r *http.Request) {
+		hostname, _ := os.Hostname()
+		counter := doCount(redisHost, hostname)
+		w.Header().Set("Content-Type", "application/json")
+		data, _ := json.Marshal(map[string]int{
+			"counter": counter,
+		})
+		fmt.Fprint(w, string(data))
+		fmt.Fprint(w, "\n")
+		Logger.Info().
+			Str("hostname", hostname).
+			Str("method", r.Method).
+			Str("path", r.URL.Path).
+			Int("counter", counter).
+			Msg(r.Method + " " + r.URL.Path)
+	})
 	http.HandleFunc("/api/version", versionAPI)
 	http.HandleFunc("/version", versionAPI)
 	http.HandleFunc("/api/livez", livez)
