@@ -152,6 +152,13 @@ func doCount(redisHost, hostname string) int {
 }
 
 func main() {
+	var err error
+
+	Logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
+	RunTimestamp = time.Now()
+
+	hostname, _ := os.Hostname()
+
 	port := "80"
 	envPort := os.Getenv("PORT")
 	if envPort != "" {
@@ -164,9 +171,15 @@ func main() {
 		redisHost = envRedisHost
 	}
 
-	hostname, _ := os.Hostname()
-	Logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
-	RunTimestamp = time.Now()
+	slowStart := 0
+	envSlowStart := os.Getenv("SLOW_START")
+	if envSlowStart != "" {
+		slowStart, err = strconv.Atoi(envSlowStart)
+		if err != nil {
+			Logger.Fatal().Str("hostname", hostname).Msg(`cannot parse integer form SLOW_START value "` + envSlowStart + `", original Go error: ` + err.Error())
+		}
+	}
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		hostname, _ := os.Hostname()
 		counter := doCount(redisHost, hostname)
@@ -204,8 +217,12 @@ func main() {
 	http.HandleFunc("/status", status)
 	http.HandleFunc("/favicon.ico", faviconHandler)
 
+	Logger.Info().Str("hostname", hostname).Msg("Starting server counter " + version.Version + ", ser ...")
+
+	time.Sleep(time.Duration(slowStart) * time.Second)
+
 	Logger.Info().Str("hostname", hostname).Msg("Server counter " + version.Version + " started on 0.0.0.0:" + port + ", see http://127.0.0.1:" + port)
-	err := http.ListenAndServe("0.0.0.0:"+port, nil)
+	err = http.ListenAndServe("0.0.0.0:"+port, nil)
 	if err != nil {
 		Logger.Fatal().Str("hostname", hostname).Msg(err.Error())
 	}
