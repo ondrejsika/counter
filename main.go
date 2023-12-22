@@ -223,8 +223,13 @@ func main() {
 		hostname, _ := os.Hostname()
 		counter := doCount(redisHost, hostname)
 		w.Header().Set("Content-Type", "application/json")
-		data, _ := json.Marshal(map[string]int{
-			"counter": counter,
+		type Response struct {
+			Counter  int    `json:"counter"`
+			Hostname string `json:"hostname"`
+		}
+		data, _ := json.Marshal(Response{
+			Counter:  counter,
+			Hostname: hostname,
 		})
 		fmt.Fprint(w, string(data))
 		fmt.Fprint(w, "\n")
