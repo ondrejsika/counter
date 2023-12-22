@@ -57,8 +57,10 @@ dockers:
       goarch: amd64
       image_templates:
         - "ondrejsika/{{ .ProjectName }}:{{ .Tag }}"
+        - "ondrejsika/{{ .ProjectName }}:stable"
         - "ondrejsika/{{ .ProjectName }}"
         - "ghcr.io/ondrejsika/{{ .ProjectName }}:{{ .Tag }}"
+        - "ghcr.io/ondrejsika/{{ .ProjectName }}:stable"
         - "ghcr.io/ondrejsika/{{ .ProjectName }}"
       dockerfile: Dockerfile.goreleaser
       ids:
@@ -79,8 +81,10 @@ dockers:
       goarch: arm64
       image_templates:
         - "ondrejsika/{{ .ProjectName }}:{{ .Tag }}-arm64v8"
+        - "ondrejsika/{{ .ProjectName }}:stable-arm64v8"
         - "ondrejsika/{{ .ProjectName }}:arm64v8"
         - "ghcr.io/ondrejsika/{{ .ProjectName }}:{{ .Tag }}-arm64v8"
+        - "ghcr.io/ondrejsika/{{ .ProjectName }}:stable-arm64v8"
         - "ghcr.io/ondrejsika/{{ .ProjectName }}:arm64v8"
       dockerfile: Dockerfile.goreleaser.arm64v8
       ids:
