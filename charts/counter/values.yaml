@@ -1,7 +1,5 @@
-# Required
-host:
-
 # Optional
+host: null
 image: ghcr.io/ondrejsika/counter
 replicas: 2
 clusterIssuer: letsencrypt
