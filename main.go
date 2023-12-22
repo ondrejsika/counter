@@ -226,10 +226,12 @@ func main() {
 		type Response struct {
 			Counter  int    `json:"counter"`
 			Hostname string `json:"hostname"`
+			Version  string `json:"version"`
 		}
 		data, _ := json.Marshal(Response{
 			Counter:  counter,
 			Hostname: hostname,
+			Version:  version.Version,
 		})
 		fmt.Fprint(w, string(data))
 		fmt.Fprint(w, "\n")
