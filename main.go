@@ -237,14 +237,16 @@ func main() {
 		counter := doCount(redisHost, hostname)
 		w.Header().Set("Content-Type", "application/json")
 		type Response struct {
-			Counter  int    `json:"counter"`
-			Hostname string `json:"hostname"`
-			Version  string `json:"version"`
+			Counter   int    `json:"counter"`
+			Hostname  string `json:"hostname"`
+			Version   string `json:"version"`
+			ExtraText string `json:"extra_text"`
 		}
 		data, _ := json.Marshal(Response{
-			Counter:  counter,
-			Hostname: hostname,
-			Version:  version.Version,
+			Counter:   counter,
+			Hostname:  hostname,
+			Version:   version.Version,
+			ExtraText: extraText,
 		})
 		fmt.Fprint(w, string(data))
 		fmt.Fprint(w, "\n")
