@@ -269,7 +269,10 @@ func main() {
 
 	Logger.Info().Str("hostname", hostname).Msg("Starting server counter " + version.Version + " ...")
 
-	time.Sleep(time.Duration(slowStart) * time.Second)
+	for i := 0; i < slowStart; i++ {
+		Logger.Info().Str("hostname", hostname).Msgf("Starting in %d seconds ...", slowStart-i)
+		time.Sleep(1 * time.Second)
+	}
 
 	Logger.Info().Str("hostname", hostname).Msg("Server counter " + version.Version + " started on 0.0.0.0:" + port + ", see http://127.0.0.1:" + port)
 	err = http.ListenAndServe("0.0.0.0:"+port, nil)
