@@ -267,7 +267,7 @@ func main() {
 	http.HandleFunc("/status", status)
 	http.HandleFunc("/favicon.ico", faviconHandler)
 
-	Logger.Info().Str("hostname", hostname).Msg("Starting server counter " + version.Version + ", ser ...")
+	Logger.Info().Str("hostname", hostname).Msg("Starting server counter " + version.Version + " ...")
 
 	time.Sleep(time.Duration(slowStart) * time.Second)
 
