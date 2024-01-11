@@ -43,7 +43,11 @@ func indexHTML(w http.ResponseWriter, hostname string, count int, extraText stri
 	}
 
 	w.Header().Set("Content-Type", "text/html")
-	fmt.Fprint(w, `<style>
+	fmt.Fprint(w, `<!DOCTYPE html>
+	<html lang="en">
+	<head>
+  <meta charset="UTF-8">
+	<style>
 	html, body {
 		height: 100%;
 	}
@@ -69,6 +73,8 @@ func indexHTML(w http.ResponseWriter, hostname string, count int, extraText stri
 	}
 	</style>
 	<link rel="icon" href="/favicon.ico">
+	</head>
+	<body>
 	<section class="center-parent">
 		<div class="center-child">
 			`+extraTextBlock+`
@@ -78,6 +84,7 @@ func indexHTML(w http.ResponseWriter, hostname string, count int, extraText stri
 			<h2>`+hostname+`</h2>
 		</div>
 	</section>
+	</body></html>
 	`)
 }
 
