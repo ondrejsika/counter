@@ -194,6 +194,19 @@ func main() {
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		hostname, _ := os.Hostname()
+
+		if r.URL.Path != "/" {
+			w.WriteHeader(http.StatusNotFound)
+			fmt.Fprintf(w, "404 Not Found\n")
+
+			Logger.Info().
+				Str("hostname", hostname).
+				Str("method", r.Method).
+				Str("path", r.URL.Path).
+				Msg(r.Method + " " + r.URL.Path + " 404 Not Found")
+			return
+		}
+
 		counter := doCount(redisHost, hostname)
 		// Check if User-Agent header exists
 		if userAgentList, ok := r.Header["User-Agent"]; ok {
