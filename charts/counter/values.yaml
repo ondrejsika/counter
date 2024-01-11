@@ -1,4 +1,6 @@
 # Optional
+EXTRA_TEXT: null
+
 host: null
 image: ghcr.io/ondrejsika/counter
 replicas: 2

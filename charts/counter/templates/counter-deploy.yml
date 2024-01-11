@@ -25,6 +25,10 @@ spec:
           env:
             - name: REDIS
               value: {{ .Release.Name }}-redis
+            {{ if .Values.EXTRA_TEXT }}
+            - name: EXTRA_TEXT
+              value: {{ .Values.EXTRA_TEXT | quote }}
+            {{ end }}
           ports:
             - containerPort: 80
 
