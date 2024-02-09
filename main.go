@@ -13,12 +13,28 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/ondrejsika/counter/version"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
 var RunTimestamp time.Time
 var Logger zerolog.Logger
+
+var promRequestsTotal = prometheus.NewCounterVec(
+	prometheus.CounterOpts{
+		Namespace: "counter",
+		Name:      "requests_total",
+		Help:      "Total number of requests per endpoint",
+	}, []string{"path"})
+
+var promCounter = prometheus.NewGauge(
+	prometheus.GaugeOpts{
+		Namespace: "counter",
+		Name:      "counter",
+		Help:      "Current counter value",
+	})
 
 type StatusResponse struct {
 	Hostname             string `json:"hostname"`
@@ -89,6 +105,7 @@ func indexHTML(w http.ResponseWriter, hostname string, count int, extraText stri
 }
 
 func versionAPI(w http.ResponseWriter, r *http.Request) {
+	promRequestsTotal.With(prometheus.Labels{"path": r.URL.Path}).Inc()
 	w.Header().Set("Content-Type", "application/json")
 	data, _ := json.Marshal(map[string]string{
 		"version": version.Version,
@@ -97,6 +114,7 @@ func versionAPI(w http.ResponseWriter, r *http.Request) {
 }
 
 func livez(w http.ResponseWriter, r *http.Request) {
+	promRequestsTotal.With(prometheus.Labels{"path": r.URL.Path}).Inc()
 	w.Header().Set("Content-Type", "application/json")
 	data, _ := json.Marshal(map[string]bool{
 		"live": true,
@@ -105,6 +123,7 @@ func livez(w http.ResponseWriter, r *http.Request) {
 }
 
 func readyz(w http.ResponseWriter, r *http.Request) {
+	promRequestsTotal.With(prometheus.Labels{"path": r.URL.Path}).Inc()
 	w.Header().Set("Content-Type", "application/json")
 	data, _ := json.Marshal(map[string]bool{
 		"ready": true,
@@ -113,6 +132,7 @@ func readyz(w http.ResponseWriter, r *http.Request) {
 }
 
 func status(w http.ResponseWriter, r *http.Request) {
+	promRequestsTotal.With(prometheus.Labels{"path": r.URL.Path}).Inc()
 	hostname, _ := os.Hostname()
 	w.Header().Set("Content-Type", "application/json")
 	data, _ := json.Marshal(StatusResponse{
@@ -125,7 +145,45 @@ func status(w http.ResponseWriter, r *http.Request) {
 }
 
 func faviconHandler(w http.ResponseWriter, r *http.Request) {
+	promRequestsTotal.With(prometheus.Labels{"path": r.URL.Path}).Inc()
 	w.WriteHeader(http.StatusNotFound)
+}
+
+func metricsHandler(w http.ResponseWriter, r *http.Request) {
+	promRequestsTotal.With(prometheus.Labels{"path": r.URL.Path}).Inc()
+	promhttp.Handler().ServeHTTP(w, r)
+}
+
+func getCount(redisHost, hostname string) int {
+	ctx := context.Background()
+
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     redisHost + ":6379",
+		Password: "",
+		DB:       0,
+	})
+
+	val, err := rdb.Get(ctx, "counter").Result()
+	if err != nil {
+		if err == redis.Nil {
+			val = "0"
+		} else {
+			log.Error().
+				Str("hostname", hostname).
+				Msg(fmt.Sprintf("error=%s", err))
+			return -1
+		}
+	}
+
+	counter, err := strconv.Atoi(val)
+	if err != nil {
+		log.Error().
+			Str("hostname", hostname).
+			Msg(fmt.Sprintf("error=%s", err))
+		return -1
+	}
+
+	return counter
 }
 
 func doCount(redisHost, hostname string) int {
@@ -165,11 +223,14 @@ func doCount(redisHost, hostname string) int {
 		return -1
 	}
 
-	return counter
+	return counter + 1
 }
 
 func main() {
 	var err error
+
+	prometheus.MustRegister(promRequestsTotal)
+	prometheus.MustRegister(promCounter)
 
 	Logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
 	RunTimestamp = time.Now()
@@ -199,7 +260,16 @@ func main() {
 
 	extraText := os.Getenv("EXTRA_TEXT")
 
+	go func() {
+		for {
+			count := getCount(redisHost, hostname)
+			promCounter.Set(float64(count))
+			time.Sleep(1 * time.Second)
+		}
+	}()
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		promRequestsTotal.With(prometheus.Labels{"path": r.URL.Path}).Inc()
 		hostname, _ := os.Hostname()
 
 		if r.URL.Path != "/" {
@@ -240,6 +310,7 @@ func main() {
 			Msg(r.Method + " " + r.URL.Path)
 	})
 	http.HandleFunc("/api/counter", func(w http.ResponseWriter, r *http.Request) {
+		promRequestsTotal.With(prometheus.Labels{"path": r.URL.Path}).Inc()
 		hostname, _ := os.Hostname()
 		counter := doCount(redisHost, hostname)
 		w.Header().Set("Content-Type", "application/json")
@@ -273,6 +344,7 @@ func main() {
 	http.HandleFunc("/api/status", status)
 	http.HandleFunc("/status", status)
 	http.HandleFunc("/favicon.ico", faviconHandler)
+	http.HandleFunc("/metrics", metricsHandler)
 
 	Logger.Info().Str("hostname", hostname).Msg("Starting server counter " + version.Version + " ...")
 
