@@ -18,16 +18,15 @@ func main() {
 		backend = envBackend
 	}
 
-	redisHost := "127.0.0.1"
-	envRedisHost := os.Getenv("REDIS")
-	if envRedisHost != "" {
-		redisHost = envRedisHost
-	}
-
 	var doCountFunc func() (int, error)
 	var getCountFunc func() (int, error)
 
 	if backend == "redis" {
+		redisHost := "127.0.0.1"
+		envRedisHost := os.Getenv("REDIS")
+		if envRedisHost != "" {
+			redisHost = envRedisHost
+		}
 		doCountFunc = func() (int, error) { return backend_redis.DoCountRedis(redisHost, hostname) }
 		getCountFunc = func() (int, error) { return backend_redis.GetCountRedis(redisHost, hostname) }
 	} else if backend == "inmemory" {
