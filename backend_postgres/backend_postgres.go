@@ -3,8 +3,10 @@ package backend_postgres
 import (
 	"fmt"
 
+	"github.com/rs/zerolog/log"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type Counter struct {
@@ -30,8 +32,13 @@ func DoCountPostgres(
 		postgresPassword,
 		postgresDatabase,
 	)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 	if err != nil {
+		log.Error().
+			Str("hostname", hostname).
+			Msg(fmt.Sprintf("error=%s", err))
 		return -1, err
 	}
 
@@ -71,8 +78,13 @@ func GetCountPostgres(
 		postgresPassword,
 		postgresDatabase,
 	)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 	if err != nil {
+		log.Error().
+			Str("hostname", hostname).
+			Msg(fmt.Sprintf("error=%s", err))
 		return -1, err
 	}
 
