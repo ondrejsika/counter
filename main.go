@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/ondrejsika/counter/backend_inmemory"
+	"github.com/ondrejsika/counter/backend_mongodb"
 	"github.com/ondrejsika/counter/backend_postgres"
 	"github.com/ondrejsika/counter/backend_redis"
 	"github.com/ondrejsika/counter/server"
@@ -68,6 +69,14 @@ func main() {
 				postgresHost, 5432, postgresUser, postgresPassword, postgresDatabase, hostname,
 			)
 		}
+	} else if backend == "mongodb" {
+		mongodbURI := "127.0.0.1"
+		envMongodbURI := os.Getenv("MONGODB_URI")
+		if envMongodbURI != "" {
+			mongodbURI = envMongodbURI
+		}
+		doCountFunc = func() (int, error) { return backend_mongodb.DoCountMongoDB(mongodbURI, hostname) }
+		getCountFunc = func() (int, error) { return backend_mongodb.GetCountMongoDB(mongodbURI, hostname) }
 	} else {
 		log.Fatalf(`no backend "%s" exists, you can use "redis" (default), "postgres", or "inmemory"\n`, backend)
 	}
