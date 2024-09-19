@@ -70,7 +70,7 @@ func main() {
 			)
 		}
 	} else if backend == "mongodb" {
-		mongodbURI := "127.0.0.1"
+		mongodbURI := "mongodb://127.0.0.1:27017"
 		envMongodbURI := os.Getenv("MONGODB_URI")
 		if envMongodbURI != "" {
 			mongodbURI = envMongodbURI
