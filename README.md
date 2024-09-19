@@ -12,3 +12,8 @@
 - `MONGODB_URI` - MongoDB host (default: `mongodb://127.0.0.1:27017`)
 - `SLOW_START` - Time in seconds to wait before start (default: `0`)
 - `EXTRA_TEXT` -  Extra text to display (default: `''`)
+
+## Images
+
+- `ondrejsika/counter`
+- `ghcr.io/ondrejsika/counter`
