@@ -17,3 +17,23 @@
 
 - `ondrejsika/counter`
 - `ghcr.io/ondrejsika/counter`
+
+## Run Dependencies
+
+Redis
+
+```
+docker run --name redis -d -p 6379:6379 redis
+```
+
+MongoDB
+
+```
+docker run --name mongodb -d -p 27017:27017 mongo
+```
+
+Postgres
+
+```
+docker run --name postgres -d -p 5432:5432 -e POSTGRES_PASSWORD=pg postgres
+```
