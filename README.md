@@ -38,6 +38,12 @@ MongoDB
 docker run --name mongodb -d -p 27017:27017 mongo
 ```
 
+Get counter value from MongoDB
+
+```
+docker exec -it mongodb mongosh counter --eval 'db.counter.find()'
+```
+
 Postgres
 
 ```
