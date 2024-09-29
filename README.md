@@ -26,6 +26,12 @@ Redis
 docker run --name redis -d -p 6379:6379 redis
 ```
 
+Get counter value from Redis
+
+```
+docker exec redis redis-cli get counter
+```
+
 MongoDB
 
 ```
