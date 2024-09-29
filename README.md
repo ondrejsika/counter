@@ -49,3 +49,9 @@ Postgres
 ```
 docker run --name postgres -d -p 5432:5432 -e POSTGRES_PASSWORD=pg postgres
 ```
+
+Get counter value from Postgres
+
+```
+docker exec postgres psql -U postgres -c 'SELECT * FROM counters'
+```
