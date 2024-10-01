@@ -335,14 +335,20 @@ func Server() {
 			postgresDatabase = envPostgresDatabase
 		}
 
+		postgresSslmode := "disable"
+		envPostgresSslmode := os.Getenv("POSTGRES_SSLMODE")
+		if envPostgresSslmode != "" {
+			postgresSslmode = envPostgresSslmode
+		}
+
 		doCountFunc = func() (int, error) {
 			return backend_postgres.DoCountPostgres(
-				postgresHost, 5432, postgresUser, postgresPassword, postgresDatabase, hostname,
+				postgresHost, 5432, postgresUser, postgresPassword, postgresDatabase, postgresSslmode, hostname,
 			)
 		}
 		getCountFunc = func() (int, error) {
 			return backend_postgres.GetCountPostgres(
-				postgresHost, 5432, postgresUser, postgresPassword, postgresDatabase, hostname,
+				postgresHost, 5432, postgresUser, postgresPassword, postgresDatabase, postgresSslmode, hostname,
 			)
 		}
 	} else if backend == "mongodb" {

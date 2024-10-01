@@ -21,16 +21,18 @@ func DoCountPostgres(
 	postgresUser string,
 	postgresPassword string,
 	postgresDatabase string,
+	postgresSslmode string,
 	hostname string,
 ) (int, error) {
 	// Connection string for the PostgreSQL database
 	dsn := fmt.Sprintf(
-		"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
 		postgresHost,
 		postgresPort,
 		postgresUser,
 		postgresPassword,
 		postgresDatabase,
+		postgresSslmode,
 	)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Silent),
@@ -68,15 +70,17 @@ func GetCountPostgres(
 	postgresUser string,
 	postgresPassword string,
 	postgresDatabase string,
+	postgresSslmode string,
 	hostname string,
 ) (int, error) {
 	dsn := fmt.Sprintf(
-		"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
 		postgresHost,
 		postgresPort,
 		postgresUser,
 		postgresPassword,
 		postgresDatabase,
+		postgresSslmode,
 	)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Silent),
