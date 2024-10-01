@@ -9,6 +9,7 @@
 - `POSTGRES_USER` - Postgres user (default: `postgres`)
 - `POSTGRES_PASSWORD` - Postgres password (default: `pg`)
 - `POSTGRES_DATABASE` - Postgres database (default: `postgres`)
+- `POSTGRES_SSLMODE` - Postgres SSL mode (default: `disable`, values can be `disable`, `require`)
 - `MONGODB_URI` - MongoDB host (default: `mongodb://127.0.0.1:27017`)
 - `SLOW_START` - Time in seconds to wait before start (default: `0`)
 - `EXTRA_TEXT` -  Extra text to display (default: `''`)
