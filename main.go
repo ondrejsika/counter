@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/ondrejsika/counter/server"
+	"github.com/ondrejsika/counter/cmd"
 )
 
 func main() {
-	server.Server()
+	cmd.Execute()
 }
