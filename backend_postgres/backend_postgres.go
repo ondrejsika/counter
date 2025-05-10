@@ -44,9 +44,6 @@ func DoCountPostgres(
 		return -1, err
 	}
 
-	// Migrate the schema
-	db.AutoMigrate(&Counter{})
-
 	// Ensure the counter exists
 	db.Where(Counter{ID: 1}).FirstOrCreate(&Counter{ID: 1, Counter: 0})
 
@@ -92,9 +89,6 @@ func GetCountPostgres(
 		return -1, err
 	}
 
-	// Migrate the schema
-	db.AutoMigrate(&Counter{})
-
 	// Ensure the counter exists
 	db.Where(Counter{ID: 1}).FirstOrCreate(&Counter{ID: 1, Counter: 0})
 
@@ -107,4 +101,39 @@ func GetCountPostgres(
 	sqlDB.Close()
 
 	return counter.Counter, nil
+}
+
+func RunMigrations(
+	postgresHost string,
+	postgresPort int,
+	postgresUser string,
+	postgresPassword string,
+	postgresDatabase string,
+	postgresSslmode string,
+	hostname string,
+) error {
+	// Connection string for the PostgreSQL database
+	dsn := fmt.Sprintf(
+		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
+		postgresHost,
+		postgresPort,
+		postgresUser,
+		postgresPassword,
+		postgresDatabase,
+		postgresSslmode,
+	)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
+	if err != nil {
+		log.Error().
+			Str("hostname", hostname).
+			Msg(fmt.Sprintf("error=%s", err))
+		return err
+	}
+
+	// Migrate the schema
+	db.AutoMigrate(&Counter{})
+
+	return nil
 }

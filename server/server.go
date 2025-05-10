@@ -157,10 +157,19 @@ func metricsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func BaseServer(
+	dontRunMigrations bool,
+	runMigrationsFunc func() error,
 	doCountFunc func() (int, error),
 	getCountFunc func() (int, error),
 ) {
 	var err error
+
+	if !dontRunMigrations {
+		err = runMigrationsFunc()
+		if err != nil {
+			Logger.Fatal().Msg(err.Error())
+		}
+	}
 
 	prometheus.MustRegister(promRequestsTotal)
 	prometheus.MustRegister(promCounter)
@@ -287,7 +296,7 @@ func BaseServer(
 	}
 }
 
-func Server() {
+func Server(dontRunMigrations bool) {
 	hostname, _ := os.Hostname()
 
 	backend := "redis"
@@ -296,6 +305,7 @@ func Server() {
 		backend = envBackend
 	}
 
+	var runMigrationsFunc func() error
 	var doCountFunc func() (int, error)
 	var getCountFunc func() (int, error)
 
@@ -305,9 +315,11 @@ func Server() {
 		if envRedisHost != "" {
 			redisHost = envRedisHost
 		}
+		runMigrationsFunc = func() error { return nil }
 		doCountFunc = func() (int, error) { return backend_redis.DoCountRedis(redisHost, hostname) }
 		getCountFunc = func() (int, error) { return backend_redis.GetCountRedis(redisHost, hostname) }
 	} else if backend == "inmemory" {
+		runMigrationsFunc = func() error { return nil }
 		doCountFunc = func() (int, error) { return backend_inmemory.DoCountInMemory() }
 		getCountFunc = func() (int, error) { return backend_inmemory.GetCountInMemory() }
 	} else if backend == "postgres" {
@@ -351,12 +363,18 @@ func Server() {
 				postgresHost, 5432, postgresUser, postgresPassword, postgresDatabase, postgresSslmode, hostname,
 			)
 		}
+		runMigrationsFunc = func() error {
+			return backend_postgres.RunMigrations(
+				postgresHost, 5432, postgresUser, postgresPassword, postgresDatabase, postgresSslmode, hostname,
+			)
+		}
 	} else if backend == "mongodb" {
 		mongodbURI := "mongodb://127.0.0.1:27017"
 		envMongodbURI := os.Getenv("MONGODB_URI")
 		if envMongodbURI != "" {
 			mongodbURI = envMongodbURI
 		}
+
 		doCountFunc = func() (int, error) { return backend_mongodb.DoCountMongoDB(mongodbURI, hostname) }
 		getCountFunc = func() (int, error) { return backend_mongodb.GetCountMongoDB(mongodbURI, hostname) }
 	} else {
@@ -364,6 +382,8 @@ func Server() {
 	}
 
 	BaseServer(
+		dontRunMigrations,
+		runMigrationsFunc,
 		doCountFunc,
 		getCountFunc,
 	)
