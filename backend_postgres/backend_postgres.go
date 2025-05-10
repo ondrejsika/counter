@@ -45,7 +45,13 @@ func DoCountPostgres(
 	}
 
 	// Ensure the counter exists
-	db.Where(Counter{ID: 1}).FirstOrCreate(&Counter{ID: 1, Counter: 0})
+	result := db.Where(Counter{ID: 1}).FirstOrCreate(&Counter{ID: 1, Counter: 0})
+	if result.Error != nil {
+		log.Error().
+			Str("hostname", hostname).
+			Msg(fmt.Sprintf("failed to ensure counter exists: %s", result.Error))
+		return -1, result.Error
+	}
 
 	// Increment the counter using Exec to execute SQL directly
 	db.Exec("UPDATE counters SET counter = counter + 1 WHERE id = 1")
@@ -90,7 +96,13 @@ func GetCountPostgres(
 	}
 
 	// Ensure the counter exists
-	db.Where(Counter{ID: 1}).FirstOrCreate(&Counter{ID: 1, Counter: 0})
+	result := db.Where(Counter{ID: 1}).FirstOrCreate(&Counter{ID: 1, Counter: 0})
+	if result.Error != nil {
+		log.Error().
+			Str("hostname", hostname).
+			Msg(fmt.Sprintf("failed to ensure counter exists: %s", result.Error))
+		return -1, result.Error
+	}
 
 	// Get the counter value
 	var counter Counter
