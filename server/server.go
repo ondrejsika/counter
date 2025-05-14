@@ -164,13 +164,6 @@ func BaseServer(
 ) {
 	var err error
 
-	if !dontRunMigrations {
-		err = runMigrationsFunc()
-		if err != nil {
-			Logger.Fatal().Msg(err.Error())
-		}
-	}
-
 	prometheus.MustRegister(promRequestsTotal)
 	prometheus.MustRegister(promCounter)
 
@@ -178,6 +171,15 @@ func BaseServer(
 	RunTimestamp = time.Now()
 
 	hostname, _ := os.Hostname()
+
+	if !dontRunMigrations {
+		err = runMigrationsFunc()
+		if err != nil {
+			Logger.Error().
+				Str("hostname", hostname).
+				Msg(err.Error())
+		}
+	}
 
 	port := "80"
 	envPort := os.Getenv("PORT")
