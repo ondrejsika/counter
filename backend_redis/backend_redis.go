@@ -9,12 +9,12 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func DoCountRedis(redisHost, hostname string) (int, error) {
+func DoCountRedis(redisHost, redisPassword, hostname string) (int, error) {
 	ctx := context.Background()
 
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     redisHost + ":6379",
-		Password: "",
+		Password: redisPassword,
 		DB:       0,
 	})
 
@@ -49,12 +49,12 @@ func DoCountRedis(redisHost, hostname string) (int, error) {
 	return counter + 1, nil
 }
 
-func GetCountRedis(redisHost, hostname string) (int, error) {
+func GetCountRedis(redisHost, redisPassword, hostname string) (int, error) {
 	ctx := context.Background()
 
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     redisHost + ":6379",
-		Password: "",
+		Password: redisPassword,
 		DB:       0,
 	})
 
