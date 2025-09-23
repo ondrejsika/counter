@@ -23,6 +23,8 @@ spec:
               cpu: 50m
               memory: 60Mi
           env:
+            - name: PORT
+              value: "8000"
             - name: REDIS
               value: {{ .Release.Name }}-redis
             {{ if .Values.EXTRA_TEXT }}
@@ -30,5 +32,5 @@ spec:
               value: {{ .Values.EXTRA_TEXT | quote }}
             {{ end }}
           ports:
-            - containerPort: 80
+            - containerPort: 8000
 
