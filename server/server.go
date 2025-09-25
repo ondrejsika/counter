@@ -380,6 +380,7 @@ func Server(dontRunMigrations bool) {
 
 		doCountFunc = func() (int, error) { return backend_mongodb.DoCountMongoDB(mongodbURI, hostname) }
 		getCountFunc = func() (int, error) { return backend_mongodb.GetCountMongoDB(mongodbURI, hostname) }
+		runMigrationsFunc = func() error { return nil }
 	} else {
 		log.Fatalf(`no backend "%s" exists, you can use "redis" (default), "postgres", or "inmemory"\n`, backend)
 	}
