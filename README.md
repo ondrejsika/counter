@@ -3,7 +3,7 @@
 ## Configuration
 
 - `BACKEND` - Storage enginge for counter, default `redis`. Values can be `redis`, `inmemory`, `postgres`, or `mongodb`.
-- `PORT` - port to listen on (default: `80`)
+- `PORT` - port to listen on (default: `8000`)
 - `REDIS` - Redis host (default: `127.0.0.1`)
 - `REDIS_PASSWORD` - Redis password (default: `''` - empty string)
 - `POSTGRES_HOST` - Postgres host (default: `127.0.0.1`)

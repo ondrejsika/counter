@@ -181,7 +181,7 @@ func BaseServer(
 		}
 	}
 
-	port := "80"
+	port := "8000"
 	envPort := os.Getenv("PORT")
 	if envPort != "" {
 		port = envPort

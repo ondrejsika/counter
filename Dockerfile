@@ -9,4 +9,4 @@ FROM debian:13-slim
 LABEL org.opencontainers.image.source=https://github.com/ondrejsika/counter
 COPY --from=builder /build/counter /usr/local/bin/counter
 CMD [ "/usr/local/bin/counter" ]
-EXPOSE 80
+EXPOSE 8000
