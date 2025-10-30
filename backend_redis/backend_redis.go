@@ -17,6 +17,7 @@ func DoCountRedis(redisHost, redisPassword, hostname string) (int, error) {
 		Password: redisPassword,
 		DB:       0,
 	})
+	defer rdb.Close()
 
 	val, err := rdb.Get(ctx, "counter").Result()
 	if err != nil {
@@ -57,6 +58,7 @@ func GetCountRedis(redisHost, redisPassword, hostname string) (int, error) {
 		Password: redisPassword,
 		DB:       0,
 	})
+	defer rdb.Close()
 
 	val, err := rdb.Get(ctx, "counter").Result()
 	if err != nil {
