@@ -15,6 +15,27 @@
 - `SLOW_START` - Time in seconds to wait before start (default: `0`)
 - `EXTRA_TEXT` -  Extra text to display (default: `''`)
 
+## API Endpoints
+
+### Counter Endpoints
+
+- **GET /** - Get counter value with UI rendering (HTML for browsers, plain text for curl)
+- **GET /api/counter** - Get counter value in JSON format
+
+### Health Check Endpoints
+
+- **GET /api/livez** or **GET /livez** - for liveness probe
+- **GET /api/readyz** or **GET /readyz** - for readiness probe
+
+### Information Endpoints
+
+- **GET /api/version** or **GET /version** - Get application version
+- **GET /api/status** or **GET /status** - Get application status and runtime information
+
+### Monitoring Endpoints
+
+- **GET /metrics** - Prometheus metrics endpoint
+
 ## Images
 
 - `ondrejsika/counter`
