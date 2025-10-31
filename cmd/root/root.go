@@ -1,7 +1,7 @@
 package root
 
 import (
-	"github.com/ondrejsika/counter/internal/server"
+	"github.com/ondrejsika/counter/pkg/server"
 	"github.com/ondrejsika/counter/version"
 	"github.com/spf13/cobra"
 )
