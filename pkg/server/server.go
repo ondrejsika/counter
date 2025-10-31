@@ -298,7 +298,11 @@ func BaseServer(
 	}
 }
 
-func Server(dontRunMigrations bool) {
+type ServerConfig struct {
+	DontRunMigrations bool
+}
+
+func Server(config ServerConfig) {
 	hostname, _ := os.Hostname()
 
 	backend := "redis"
@@ -386,7 +390,7 @@ func Server(dontRunMigrations bool) {
 	}
 
 	BaseServer(
-		dontRunMigrations,
+		config.DontRunMigrations,
 		runMigrationsFunc,
 		doCountFunc,
 		getCountFunc,
