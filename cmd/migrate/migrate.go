@@ -2,7 +2,7 @@ package migrate
 
 import (
 	"github.com/ondrejsika/counter/cmd/root"
-	"github.com/ondrejsika/counter/migrate"
+	"github.com/ondrejsika/counter/internal/migrate"
 	"github.com/spf13/cobra"
 )
 

@@ -4,7 +4,7 @@ import (
 	_ "embed"
 	"os"
 
-	"github.com/ondrejsika/counter/backend_postgres"
+	"github.com/ondrejsika/counter/internal/backend_postgres"
 )
 
 func Migrate() {
