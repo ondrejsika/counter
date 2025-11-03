@@ -12,7 +12,7 @@ var Cmd = &cobra.Command{
 	Use:   "counter",
 	Short: "counter, " + version.Version,
 	Run: func(c *cobra.Command, args []string) {
-		server.Server(server.ServerConfig{
+		server.Server(server.ServerOptions{
 			DontRunMigrations: FlagDontRunMigrations,
 		})
 	},

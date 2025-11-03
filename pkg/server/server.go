@@ -4,12 +4,12 @@ import (
 	"github.com/ondrejsika/counter/internal/server"
 )
 
-type ServerConfig struct {
+type ServerOptions struct {
 	DontRunMigrations bool
 }
 
-func Server(config ServerConfig) {
+func Server(opts ServerOptions) {
 	server.Server(
-		config.DontRunMigrations,
+		opts.DontRunMigrations,
 	)
 }
