@@ -209,6 +209,11 @@ func BaseServer(
 		promRequestsTotal.With(prometheus.Labels{"path": r.URL.Path}).Inc()
 		hostname, _ := os.Hostname()
 
+		api_only := false
+		if os.Getenv("API_ONLY") == "1" {
+			api_only = true
+		}
+
 		if r.URL.Path != "/" {
 			w.WriteHeader(http.StatusNotFound)
 			fmt.Fprintf(w, "404 Not Found\n")
@@ -218,6 +223,12 @@ func BaseServer(
 				Str("method", r.Method).
 				Str("path", r.URL.Path).
 				Msg(r.Method + " " + r.URL.Path + " 404 Not Found")
+			return
+		}
+
+		if api_only {
+			w.WriteHeader(http.StatusNotFound)
+			fmt.Fprintf(w, "404 Not Found (API-only mode, use /api/counter)\n")
 			return
 		}
 
