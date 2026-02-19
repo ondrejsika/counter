@@ -283,6 +283,32 @@ func BaseServer(
 			Int("counter", counter).
 			Msg(r.Method + " " + r.URL.Path)
 	})
+	http.HandleFunc("/api/read-counter", func(w http.ResponseWriter, r *http.Request) {
+		promRequestsTotal.With(prometheus.Labels{"path": r.URL.Path}).Inc()
+		hostname, _ := os.Hostname()
+		counter, _ := getCountFunc()
+		w.Header().Set("Content-Type", "application/json")
+		type Response struct {
+			Counter   int    `json:"counter"`
+			Hostname  string `json:"hostname"`
+			Version   string `json:"version"`
+			ExtraText string `json:"extra_text"`
+		}
+		data, _ := json.Marshal(Response{
+			Counter:   counter,
+			Hostname:  hostname,
+			Version:   version.Version,
+			ExtraText: extraText,
+		})
+		fmt.Fprint(w, string(data))
+		fmt.Fprint(w, "\n")
+		Logger.Info().
+			Str("hostname", hostname).
+			Str("method", r.Method).
+			Str("path", r.URL.Path).
+			Int("counter", counter).
+			Msg(r.Method + " " + r.URL.Path)
+	})
 	http.HandleFunc("/api/version", versionAPI)
 	http.HandleFunc("/version", versionAPI)
 	http.HandleFunc("/api/livez", livez)
