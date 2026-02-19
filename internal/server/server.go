@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/ondrejsika/counter/internal/backend_inmemory"
+	"github.com/ondrejsika/counter/internal/backend_kafka"
 	"github.com/ondrejsika/counter/internal/backend_mongodb"
 	"github.com/ondrejsika/counter/internal/backend_postgres"
 	"github.com/ondrejsika/counter/internal/backend_redis"
@@ -395,8 +396,22 @@ func Server(dontRunMigrations bool) {
 		doCountFunc = func() (int, error) { return backend_mongodb.DoCountMongoDB(mongodbURI, hostname) }
 		getCountFunc = func() (int, error) { return backend_mongodb.GetCountMongoDB(mongodbURI, hostname) }
 		runMigrationsFunc = func() error { return nil }
+	} else if backend == "kafka" {
+		kafkaPeers := strings.Split("127.0.0.1:9092", ",")
+		envKafkaPeers := os.Getenv("KAFKA_PEERS")
+		if envKafkaPeers != "" {
+			kafkaPeers = strings.Split(envKafkaPeers, ",")
+		}
+		kafkaTopic := "counter"
+		envKafkaTopic := os.Getenv("KAFKA_TOPIC")
+		if envKafkaTopic != "" {
+			kafkaTopic = envKafkaTopic
+		}
+		runMigrationsFunc = func() error { return backend_kafka.CreateTopicKafka(kafkaPeers, kafkaTopic, hostname) }
+		doCountFunc = func() (int, error) { return backend_kafka.DoCountKafka(kafkaPeers, kafkaTopic, hostname) }
+		getCountFunc = func() (int, error) { return backend_kafka.GetCountKafka(kafkaPeers, kafkaTopic, hostname) }
 	} else {
-		log.Fatalf(`no backend "%s" exists, you can use "redis" (default), "postgres", or "inmemory"\n`, backend)
+		log.Fatalf(`no backend "%s" exists, you can use "redis" (default), "postgres", "inmemory", "mongodb", or "kafka"\n`, backend)
 	}
 
 	BaseServer(

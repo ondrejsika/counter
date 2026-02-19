@@ -2,7 +2,7 @@
 
 ## Configuration
 
-- `BACKEND` - Storage enginge for counter, default `redis`. Values can be `redis`, `inmemory`, `postgres`, or `mongodb`.
+- `BACKEND` - Storage enginge for counter, default `redis`. Values can be `redis`, `inmemory`, `postgres`, `mongodb`, or `kafka`.
 - `PORT` - port to listen on (default: `8000`)
 - `API_ONLY` - Disable homepage / index page (`/`) when set to `1`, default is `0`
 - `REDIS` - Redis host (default: `127.0.0.1`)
@@ -13,6 +13,8 @@
 - `POSTGRES_DATABASE` - Postgres database (default: `postgres`)
 - `POSTGRES_SSLMODE` - Postgres SSL mode (default: `disable`, values can be `disable`, `require`)
 - `MONGODB_URI` - MongoDB host (default: `mongodb://127.0.0.1:27017`)
+- `KAFKA_PEERS` - Comma-separated list of Kafka bootstrap servers (default: `127.0.0.1:9092`)
+- `KAFKA_TOPIC` - Kafka topic to store counts (default: `counter`)
 - `SLOW_START` - Time in seconds to wait before start (default: `0`)
 - `EXTRA_TEXT` -  Extra text to display (default: `''`)
 
@@ -78,4 +80,16 @@ Get counter value from Postgres
 
 ```
 docker exec postgres psql -U postgres -c 'SELECT * FROM counters'
+```
+
+Kafka
+
+```
+docker run --name kafka -d -p 9092:9092 apache/kafka
+```
+
+Get counter value from Kafka (number of messages in topic)
+
+```
+docker exec kafka /opt/kafka/bin/kafka-get-offsets.sh --bootstrap-server localhost:9092 --topic counter
 ```
