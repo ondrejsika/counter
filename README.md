@@ -17,6 +17,7 @@
 - `KAFKA_TOPIC` - Kafka topic to store counts (default: `counter`)
 - `SLOW_START` - Time in seconds to wait before start (default: `0`)
 - `EXTRA_TEXT` -  Extra text to display (default: `''`)
+- `EXTRA_TEXT_SUFFIX` -  Extra text suffix to display after the text value (default: `''`)
 
 ## API Endpoints
 
