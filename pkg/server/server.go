@@ -6,10 +6,12 @@ import (
 
 type ServerOptions struct {
 	DontRunMigrations bool
+	VersionOverride   string
 }
 
 func Server(opts ServerOptions) {
 	server.Server(
 		opts.DontRunMigrations,
+		opts.VersionOverride,
 	)
 }

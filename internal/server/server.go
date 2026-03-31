@@ -313,7 +313,11 @@ func BaseServer(
 	}
 }
 
-func Server(dontRunMigrations bool) {
+func Server(dontRunMigrations bool, versionOverride string) {
+	if versionOverride != "" {
+		version.Version = versionOverride
+	}
+
 	hostname, _ := os.Hostname()
 
 	backend := "redis"
