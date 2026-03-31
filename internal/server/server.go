@@ -197,6 +197,10 @@ func BaseServer(
 	}
 
 	extraText := os.Getenv("EXTRA_TEXT")
+	extraTextSuffix := os.Getenv("EXTRA_TEXT_SUFFIX")
+	if extraTextSuffix != "" {
+		extraText = extraText + " " + extraTextSuffix
+	}
 
 	go func() {
 		for {
