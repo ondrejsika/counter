@@ -15,6 +15,7 @@ import (
 	"github.com/ondrejsika/counter/internal/backend_mongodb"
 	"github.com/ondrejsika/counter/internal/backend_postgres"
 	"github.com/ondrejsika/counter/internal/backend_redis"
+	"github.com/ondrejsika/counter/internal/backend_skv"
 	"github.com/ondrejsika/counter/version"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -404,6 +405,15 @@ func Server(dontRunMigrations bool, versionOverride string) {
 		doCountFunc = func() (int, error) { return backend_mongodb.DoCountMongoDB(mongodbURI, hostname) }
 		getCountFunc = func() (int, error) { return backend_mongodb.GetCountMongoDB(mongodbURI, hostname) }
 		runMigrationsFunc = func() error { return nil }
+	} else if backend == "skv" {
+		skvOrigin := "http://127.0.0.1:9000"
+		envSKVOrigin := os.Getenv("SKV_ORIGIN")
+		if envSKVOrigin != "" {
+			skvOrigin = envSKVOrigin
+		}
+		runMigrationsFunc = func() error { return nil }
+		doCountFunc = func() (int, error) { return backend_skv.DoCountSKV(skvOrigin, hostname) }
+		getCountFunc = func() (int, error) { return backend_skv.GetCountSKV(skvOrigin, hostname) }
 	} else if backend == "kafka" {
 		kafkaPeers := strings.Split("127.0.0.1:9092", ",")
 		envKafkaPeers := os.Getenv("KAFKA_PEERS")
@@ -419,7 +429,7 @@ func Server(dontRunMigrations bool, versionOverride string) {
 		doCountFunc = func() (int, error) { return backend_kafka.DoCountKafka(kafkaPeers, kafkaTopic, hostname) }
 		getCountFunc = func() (int, error) { return backend_kafka.GetCountKafka(kafkaPeers, kafkaTopic, hostname) }
 	} else {
-		log.Fatalf(`no backend "%s" exists, you can use "redis" (default), "postgres", "inmemory", "mongodb", or "kafka"\n`, backend)
+		log.Fatalf(`no backend "%s" exists, you can use "redis" (default), "postgres", "inmemory", "mongodb", "kafka", or "skv"\n`, backend)
 	}
 
 	BaseServer(
