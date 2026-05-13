@@ -3,6 +3,7 @@ module github.com/ondrejsika/counter
 go 1.24.0
 
 require (
+	github.com/IBM/sarama v1.46.3
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/prometheus/client_golang v1.18.0
 	github.com/rs/zerolog v1.26.1
@@ -13,7 +14,6 @@ require (
 )
 
 require (
-	github.com/IBM/sarama v1.46.3 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
