@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/ondrejsika/counter/internal/backend_postgres"
+	"github.com/ondrejsika/counter/internal/backend_redis"
 )
 
 func Migrate() {
@@ -15,6 +16,18 @@ func Migrate() {
 	envBackend := os.Getenv("BACKEND")
 	if envBackend != "" {
 		backend = envBackend
+	}
+
+	if backend == "redis" {
+		redisHost := os.Getenv("REDIS")
+		if redisHost == "" {
+			redisHost = "127.0.0.1"
+		}
+		redisPassword := os.Getenv("REDIS_PASSWORD")
+		redisSchema := os.Getenv("REDIS_SCHEMA")
+		runMigrationsFunc = func() error {
+			return backend_redis.RunFakeMigrations(redisHost, redisPassword, hostname, redisSchema)
+		}
 	}
 
 	if backend == "postgres" {

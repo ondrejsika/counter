@@ -342,7 +342,10 @@ func Server(dontRunMigrations bool, versionOverride string) {
 			redisHost = envRedisHost
 		}
 		redisPassword := os.Getenv("REDIS_PASSWORD")
-		runMigrationsFunc = func() error { return nil }
+
+		redisSchema := os.Getenv("REDIS_SCHEMA")
+
+		runMigrationsFunc = func() error { return backend_redis.RunFakeMigrations(redisHost, redisPassword, hostname, redisSchema) }
 		doCountFunc = func() (int, error) { return backend_redis.DoCountRedis(redisHost, redisPassword, hostname) }
 		getCountFunc = func() (int, error) { return backend_redis.GetCountRedis(redisHost, redisPassword, hostname) }
 	} else if backend == "inmemory" {
