@@ -7,6 +7,7 @@
 - `API_ONLY` - Disable homepage / index page (`/`) when set to `1`, default is `0`
 - `REDIS` - Redis host (default: `127.0.0.1`)
 - `REDIS_PASSWORD` - Redis password (default: `''` - empty string)
+- `REDIS_SCHEMA` - Fake schema version used for migration testing (default: ``)
 - `POSTGRES_HOST` - Postgres host (default: `127.0.0.1`)
 - `POSTGRES_USER` - Postgres user (default: `postgres`)
 - `POSTGRES_PASSWORD` - Postgres password (default: `pg`)
