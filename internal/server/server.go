@@ -291,8 +291,29 @@ func BaseServer(
 				Msg(r.Method + " " + r.URL.Path)
 		}
 	}
+	counterAPITXTHandler := func(countFunc func() (int, error)) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			promRequestsTotal.With(prometheus.Labels{"path": r.URL.Path}).Inc()
+			hostname, _ := os.Hostname()
+			counter, _ := countFunc()
+			w.Header().Set("Content-Type", "text/plain")
+			if extraText == "" {
+				fmt.Fprintf(w, "%s %d\n", hostname, counter)
+			} else {
+				fmt.Fprintf(w, "%s %s %d\n", extraText, hostname, counter)
+			}
+			Logger.Info().
+				Str("hostname", hostname).
+				Str("method", r.Method).
+				Str("path", r.URL.Path).
+				Int("counter", counter).
+				Msg(r.Method + " " + r.URL.Path)
+		}
+	}
 	http.HandleFunc("/api/counter", counterAPIHandler(doCountFunc))
 	http.HandleFunc("/api/read-counter", counterAPIHandler(getCountFunc))
+	http.HandleFunc("/api/counter-txt", counterAPITXTHandler(doCountFunc))
+	http.HandleFunc("/api/read-counter-txt", counterAPITXTHandler(getCountFunc))
 	http.HandleFunc("/api/version", versionAPI)
 	http.HandleFunc("/version", versionAPI)
 	http.HandleFunc("/api/livez", livez)
