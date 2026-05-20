@@ -16,6 +16,7 @@ import (
 	"github.com/ondrejsika/counter/internal/backend_postgres"
 	"github.com/ondrejsika/counter/internal/backend_redis"
 	"github.com/ondrejsika/counter/internal/backend_skv"
+	"github.com/ondrejsika/counter/internal/vault_utils"
 	"github.com/ondrejsika/counter/version"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -390,6 +391,35 @@ func Server(dontRunMigrations bool, versionOverride string) {
 		envPostgresPassword := os.Getenv("POSTGRES_PASSWORD")
 		if envPostgresPassword != "" {
 			postgresPassword = envPostgresPassword
+		}
+
+		postgresPasswordVaultSecretPath := os.Getenv("POSTGRES_PASSWORD_VAULT_SECRET_PATH")
+		if postgresPasswordVaultSecretPath != "" {
+			vaultAddr, vaultAuthRole, vaultAuthPath, err := vault_utils.GetVaultEnv()
+			if err != nil {
+				log.Fatalf("vault env: %v", err)
+			}
+
+			postgresPasswordVaultSecretKey := os.Getenv("POSTGRES_PASSWORD_VAULT_SECRET_KEY")
+			if postgresPasswordVaultSecretKey == "" {
+				log.Fatalf("POSTGRES_PASSWORD_VAULT_SECRET_KEY is not set")
+			}
+
+			vaultToken, err := vault_utils.GetVaultTokenFromKubernetes(vaultAddr, vaultAuthPath, vaultAuthRole, postgresPasswordVaultSecretPath)
+			if err != nil {
+				log.Fatalf("vault token from kubernetes: %v", err)
+			}
+
+			secret, err := vault_utils.GetVaultSecret(vaultAddr, vaultToken, postgresPasswordVaultSecretPath)
+			if err != nil {
+				log.Fatalf("vault secret: %v", err)
+			}
+
+			password, ok := secret[postgresPasswordVaultSecretKey]
+			if !ok {
+				log.Fatalf("vault secret at %s missing '%s' key", postgresPasswordVaultSecretPath, postgresPasswordVaultSecretKey)
+			}
+			postgresPassword = password
 		}
 
 		postgresDatabase := "postgres"
