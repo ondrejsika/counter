@@ -108,6 +108,22 @@ func GetVaultSecret(vaultAddr, vaultToken, vaultSecretPath string) (map[string]s
 	return toStringMap(raw), nil
 }
 
+func LoadEnvFromVaultSecret(vaultAddr, vaultToken, vaultSecretPath string) error {
+	secret, err := GetVaultSecret(vaultAddr, vaultToken, vaultSecretPath)
+	if err != nil {
+		return err
+	}
+	for k, v := range secret {
+		if _, exists := os.LookupEnv(k); exists {
+			continue
+		}
+		if err := os.Setenv(k, v); err != nil {
+			return fmt.Errorf("set env %s: %w", k, err)
+		}
+	}
+	return nil
+}
+
 func toStringMap(m map[string]interface{}) map[string]string {
 	out := make(map[string]string, len(m))
 	for k, v := range m {
