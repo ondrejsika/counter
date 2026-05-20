@@ -347,6 +347,21 @@ func Server(dontRunMigrations bool, versionOverride string) {
 
 	hostname, _ := os.Hostname()
 
+	vaultEnvSecretPath := os.Getenv("VAULT_ENV_SECRET_PATH")
+	if vaultEnvSecretPath != "" {
+		vaultAddr, vaultAuthRole, vaultAuthPath, err := vault_utils.GetVaultEnv()
+		if err != nil {
+			log.Fatalf("vault env: %v", err)
+		}
+		vaultToken, err := vault_utils.GetVaultTokenFromKubernetes(vaultAddr, vaultAuthPath, vaultAuthRole, vaultEnvSecretPath)
+		if err != nil {
+			log.Fatalf("vault token from kubernetes: %v", err)
+		}
+		if err := vault_utils.LoadEnvFromVaultSecret(vaultAddr, vaultToken, vaultEnvSecretPath); err != nil {
+			log.Fatalf("load env from vault secret: %v", err)
+		}
+	}
+
 	backend := "redis"
 	envBackend := os.Getenv("BACKEND")
 	if envBackend != "" {
@@ -391,35 +406,6 @@ func Server(dontRunMigrations bool, versionOverride string) {
 		envPostgresPassword := os.Getenv("POSTGRES_PASSWORD")
 		if envPostgresPassword != "" {
 			postgresPassword = envPostgresPassword
-		}
-
-		postgresPasswordVaultSecretPath := os.Getenv("POSTGRES_PASSWORD_VAULT_SECRET_PATH")
-		if postgresPasswordVaultSecretPath != "" {
-			vaultAddr, vaultAuthRole, vaultAuthPath, err := vault_utils.GetVaultEnv()
-			if err != nil {
-				log.Fatalf("vault env: %v", err)
-			}
-
-			postgresPasswordVaultSecretKey := os.Getenv("POSTGRES_PASSWORD_VAULT_SECRET_KEY")
-			if postgresPasswordVaultSecretKey == "" {
-				log.Fatalf("POSTGRES_PASSWORD_VAULT_SECRET_KEY is not set")
-			}
-
-			vaultToken, err := vault_utils.GetVaultTokenFromKubernetes(vaultAddr, vaultAuthPath, vaultAuthRole, postgresPasswordVaultSecretPath)
-			if err != nil {
-				log.Fatalf("vault token from kubernetes: %v", err)
-			}
-
-			secret, err := vault_utils.GetVaultSecret(vaultAddr, vaultToken, postgresPasswordVaultSecretPath)
-			if err != nil {
-				log.Fatalf("vault secret: %v", err)
-			}
-
-			password, ok := secret[postgresPasswordVaultSecretKey]
-			if !ok {
-				log.Fatalf("vault secret at %s missing '%s' key", postgresPasswordVaultSecretPath, postgresPasswordVaultSecretKey)
-			}
-			postgresPassword = password
 		}
 
 		postgresDatabase := "postgres"
