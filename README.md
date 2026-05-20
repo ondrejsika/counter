@@ -11,11 +11,6 @@
 - `POSTGRES_HOST` - Postgres host (default: `127.0.0.1`)
 - `POSTGRES_USER` - Postgres user (default: `postgres`)
 - `POSTGRES_PASSWORD` - Postgres password (default: `pg`)
-- `POSTGRES_PASSWORD_VAULT_SECRET_PATH` - Vault secret path to fetch Postgres password from (e.g. `secret/data/postgres`), overrides `POSTGRES_PASSWORD` when set
-- `POSTGRES_PASSWORD_VAULT_SECRET_KEY` - Key within the Vault secret to use as the password (required when using `POSTGRES_PASSWORD_VAULT_SECRET_PATH`)
-- `VAULT_ADDR` - Vault server address (default: `http://vault.vault:8200`)
-- `VAULT_KUBERNETES_AUTH_ROLE` - Vault Kubernetes auth role (required when using `POSTGRES_PASSWORD_VAULT_SECRET_PATH`)
-- `VAULT_KUBERNETES_AUTH_PATH` - Vault Kubernetes auth mount path (default: `kubernetes`)
 - `POSTGRES_DATABASE` - Postgres database (default: `postgres`)
 - `POSTGRES_SSLMODE` - Postgres SSL mode (default: `disable`, values can be `disable`, `require`)
 - `MONGODB_URI` - MongoDB host (default: `mongodb://127.0.0.1:27017`)
@@ -24,6 +19,13 @@
 - `SLOW_START` - Time in seconds to wait before start (default: `0`)
 - `EXTRA_TEXT` -  Extra text to display (default: `''`)
 - `EXTRA_TEXT_SUFFIX` -  Extra text suffix to display after the text value (default: `''`)
+
+## Vault Configuration
+
+- `VAULT_ENV_SECRET_PATH` - Vault secret path to load all environment variables from (e.g. `secret/data/counter`), applied before any other config is read
+- `VAULT_ADDR` - Vault server address (default: `http://vault.vault:8200`)
+- `VAULT_KUBERNETES_AUTH_ROLE` - Vault Kubernetes auth role (required when using `VAULT_ENV_SECRET_PATH`)
+- `VAULT_KUBERNETES_AUTH_PATH` - Vault Kubernetes auth mount path (default: `kubernetes`)
 
 ## API Endpoints
 
