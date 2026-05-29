@@ -32,7 +32,10 @@
 ### Counter Endpoints
 
 - **GET /** - Get counter value with UI rendering (HTML for browsers, plain text for curl)
-- **GET /api/counter** - Get counter value in JSON format
+- **GET /api/counter** - Get and increase counter value in JSON format
+- **GET /api/counter-txt** - Get and increase counter value in plain text format
+- **GET /api/read-counter** - Read counter value in JSON format, NOT increase the counter
+- **GET /api/read-counter-txt** - Read counter value in plain text format, NOT increase the counter
 
 ### Health Check Endpoints
 
