@@ -58,6 +58,12 @@
 - `ondrejsika/counter`
 - `ghcr.io/ondrejsika/counter`
 
+## Frontends
+
+- [ondrejsika/counter-frontend-go](https://github.com/ondrejsika/counter-frontend-go) - Frontend written in Go
+- [ondrejsika/counter-frontend](https://github.com/ondrejsika/counter-frontend) - Next.js frontend
+- [ondrejsika/counter-frontend-new](https://github.com/ondrejsika/counter-frontend-new) - New frontend on latest Next.js
+
 ## Run Dependencies
 
 Redis
