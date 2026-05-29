@@ -1,3 +1,5 @@
+[Ondrej Sika (sika.io)](https://sika.io) | <ondrej@sika.io> | [**Skoleni Kubernetes**](https://ondrej-sika.cz/skoleni/kubernetes/) 🚀💻
+
 # ondrejsika/counter
 
 ## Configuration
