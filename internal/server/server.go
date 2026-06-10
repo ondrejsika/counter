@@ -334,7 +334,14 @@ func BaseServer(
 	}
 
 	Logger.Info().Str("hostname", hostname).Msg("Server counter " + version.Version + " started on 0.0.0.0:" + port + ", see http://127.0.0.1:" + port)
-	err = http.ListenAndServe("0.0.0.0:"+port, nil)
+	var mux http.Handler = http.DefaultServeMux
+	if os.Getenv("HTTP_CLOSE_CONNECTION") == "1" {
+		mux = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Connection", "close")
+			http.DefaultServeMux.ServeHTTP(w, r)
+		})
+	}
+	err = http.ListenAndServe("0.0.0.0:"+port, mux)
 	if err != nil {
 		Logger.Fatal().Str("hostname", hostname).Msg(err.Error())
 	}
