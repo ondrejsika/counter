@@ -21,6 +21,7 @@
 - `SLOW_START` - Time in seconds to wait before start (default: `0`)
 - `EXTRA_TEXT` -  Extra text to display (default: `''`)
 - `EXTRA_TEXT_SUFFIX` -  Extra text suffix to display after the text value (default: `''`)
+- `HTTP_CLOSE_CONNECTION` - Close HTTP connection after every response when set to `1` (default: `0`)
 
 ## Vault Configuration
 
